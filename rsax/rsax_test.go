@@ -49,3 +49,10 @@ func TestCrypt(t *testing.T) {
 
 	assert.Equal(t, rawData, data)
 }
+
+func TestLoad(t *testing.T) {
+	priv, pub, err := LoadKeyBase64("/tmp/priv.pem")
+	assert.NoError(t, err)
+	t.Log(priv)
+	t.Log(pub)
+}

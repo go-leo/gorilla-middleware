@@ -8,31 +8,22 @@ import (
 	"encoding/hex"
 )
 
-func GenerateKey(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
+func GenerateKeyHex(bits int) (string, string, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
-		return nil, nil, err
+		return "", "", err
 	}
-	return privateKey, &privateKey.PublicKey, err
+	privateKeyStr := hex.EncodeToString(x509.MarshalPKCS1PrivateKey(privateKey))
+	publicKeyStr := hex.EncodeToString(x509.MarshalPKCS1PublicKey(&privateKey.PublicKey))
+	return privateKeyStr, publicKeyStr, nil
 }
 
-func GenerateKeyPKCS1(privateKey *rsa.PrivateKey, publicKey *rsa.PublicKey, err error) ([]byte, []byte, error) {
-	if err != nil {
-		return nil, nil, err
-	}
-	return x509.MarshalPKCS1PrivateKey(privateKey), x509.MarshalPKCS1PublicKey(publicKey), err
-}
-
-func GenerateRsaKeyHex(privateKey []byte, publicKey []byte, err error) (string, string, error) {
+func GenerateKeyBase64(bits int) (string, string, error) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
 		return "", "", err
 	}
-	return hex.EncodeToString(privateKey), hex.EncodeToString(publicKey), nil
-}
-
-func GenerateRsaKeyBase64(privateKey []byte, publicKey []byte, err error) (string, string, error) {
-	if err != nil {
-		return "", "", err
-	}
-	return base64.StdEncoding.EncodeToString(privateKey), base64.StdEncoding.EncodeToString(publicKey), nil
+	privateKeyStr := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(privateKey))
+	publicKeyStr := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(&privateKey.PublicKey))
+	return privateKeyStr, publicKeyStr, nil
 }

@@ -9,7 +9,7 @@ import (
 	"encoding/hex"
 )
 
-func EncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, err error) {
+func EncryptToHex(plainText []byte, hexPubKey string) (string, error) {
 	pub, err := hex.DecodeString(hexPubKey)
 	if err != nil {
 		return "", err
@@ -21,7 +21,7 @@ func EncryptToHex(plainText []byte, hexPubKey string) (hexCipherText string, err
 	return hex.EncodeToString(cipherBytes), nil
 }
 
-func DecryptByHex(hexCipherText, hexPriKey string) (plainText []byte, err error) {
+func DecryptByHex(hexCipherText, hexPriKey string) ([]byte, error) {
 	privateBytes, err := hex.DecodeString(hexPriKey)
 	if err != nil {
 		return nil, err

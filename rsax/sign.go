@@ -8,10 +8,10 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
-	"github.com/wumansgy/goEncrypt/hash"
+	"github.com/go-leo/cryptox/shax"
 )
 
-func SignHex(data []byte, priKey string) (string, error) {
+func SignWithSha256Hex(data []byte, priKey string) (string, error) {
 	priBytes, err := hex.DecodeString(priKey)
 	if err != nil {
 		return "", err
@@ -20,16 +20,15 @@ func SignHex(data []byte, priKey string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	hashed := hash.Sha256(data)
-	sign, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
+	sign, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, shax.Sha256(data))
 	if err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(sign), nil
 }
 
-func VerifySignHex(data []byte, hexSign, hexPubKey string) error {
-	signBytes, err := hex.DecodeString(hexSign)
+func VerifySignWithSha256Hex(data []byte, hexSign, hexPubKey string) error {
+	sig, err := hex.DecodeString(hexSign)
 	if err != nil {
 		return err
 	}
@@ -37,44 +36,41 @@ func VerifySignHex(data []byte, hexSign, hexPubKey string) error {
 	if err != nil {
 		return err
 	}
-	publicKey, err := x509.ParsePKCS1PublicKey(pubBytes)
+	pub, err := x509.ParsePKCS1PublicKey(pubBytes)
 	if err != nil {
 		return err
 	}
-	hashed := hash.Sha256(data)
-	return rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed, signBytes)
+	return rsa.VerifyPKCS1v15(pub, crypto.SHA256, shax.Sha256(data), sig)
 }
 
-func SignBase64(data []byte, priKey string) (string, error) {
-	priBytes, err := base64.StdEncoding.DecodeString(priKey)
+func SignWithSha256Base64(data []byte, priKey string) (string, error) {
+	der, err := base64.StdEncoding.DecodeString(priKey)
 	if err != nil {
 		return "", err
 	}
-	privateKey, err := x509.ParsePKCS1PrivateKey(priBytes)
+	priv, err := x509.ParsePKCS1PrivateKey(der)
 	if err != nil {
 		return "", err
 	}
-	hashed := hash.Sha256(data)
-	sign, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
+	sig, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, shax.Sha256(data))
 	if err != nil {
 		return "", err
 	}
-	return base64.StdEncoding.EncodeToString(sign), nil
+	return base64.StdEncoding.EncodeToString(sig), nil
 }
 
-func VerifySignBase64(data []byte, base64Sign, base64PubKey string) error {
-	signBytes, err := base64.StdEncoding.DecodeString(base64Sign)
+func VerifySignWithSha256Base64(data []byte, base64Sign, base64PubKey string) error {
+	sig, err := base64.StdEncoding.DecodeString(base64Sign)
 	if err != nil {
 		return err
 	}
-	pubBytes, err := base64.StdEncoding.DecodeString(base64PubKey)
+	der, err := base64.StdEncoding.DecodeString(base64PubKey)
 	if err != nil {
 		return err
 	}
-	publicKey, err := x509.ParsePKCS1PublicKey(pubBytes)
+	pub, err := x509.ParsePKCS1PublicKey(der)
 	if err != nil {
 		return err
 	}
-	hashed := hash.Sha256(data)
-	return rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed, signBytes)
+	return rsa.VerifyPKCS1v15(pub, crypto.SHA256, shax.Sha256(data), sig)
 }

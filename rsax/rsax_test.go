@@ -6,15 +6,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSign(t *testing.T) {
+func TestSignHex(t *testing.T) {
 	privateKey, publicKey, err := GenerateKeyHex(1024)
 	assert.NoError(t, err)
 
+	t.Log(privateKey)
+	t.Log(publicKey)
+
 	rawData := []byte("he is hello kitty")
-	signHex, err := SignHex(rawData, privateKey)
+	signHex, err := SignWithSha256Hex(rawData, privateKey)
 	assert.NoError(t, err)
 
-	err = VerifySignHex(rawData, signHex, publicKey)
+	err = VerifySignWithSha256Hex(rawData, signHex, publicKey)
+	assert.NoError(t, err)
+}
+
+func TestSignBase64(t *testing.T) {
+	privateKey, publicKey, err := GenerateKeyBase64(1024)
+	assert.NoError(t, err)
+
+	t.Log(privateKey)
+	t.Log(publicKey)
+
+	rawData := []byte("he is hello kitty")
+	signHex, err := SignWithSha256Base64(rawData, privateKey)
+	assert.NoError(t, err)
+
+	err = VerifySignWithSha256Base64(rawData, signHex, publicKey)
 	assert.NoError(t, err)
 }
 

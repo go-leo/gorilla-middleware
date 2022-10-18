@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
-	"encoding/base64"
 	"errors"
+
+	"github.com/go-leo/cryptox/base64x"
 )
 
 // Encrypt 加密
@@ -21,7 +22,7 @@ func Encrypt(text string, Key string, IV string) (string, error) {
 	ciphertext := make([]byte, len(msg))
 	mode := cipher.NewCBCEncrypter(block, []byte(IV))
 	mode.CryptBlocks(ciphertext, msg)
-	finalMsg := base64.StdEncoding.EncodeToString(ciphertext)
+	finalMsg := base64x.StdEncode(ciphertext)
 	return finalMsg, nil
 }
 
@@ -34,7 +35,7 @@ func Decrypt(text string, key string, iv string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	decodedMsg, err := base64.StdEncoding.DecodeString(text)
+	decodedMsg, err := base64x.StdDecode(text)
 	if err != nil {
 		return "", err
 	}

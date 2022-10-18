@@ -4,8 +4,9 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
-	"encoding/base64"
 	"encoding/hex"
+
+	"github.com/go-leo/cryptox/base64x"
 )
 
 func GenerateKeyHex(bits int) (string, string, error) {
@@ -23,7 +24,7 @@ func GenerateKeyBase64(bits int) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	privateKeyStr := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PrivateKey(privateKey))
-	publicKeyStr := base64.StdEncoding.EncodeToString(x509.MarshalPKCS1PublicKey(&privateKey.PublicKey))
+	privateKeyStr := base64x.StdEncode(x509.MarshalPKCS1PrivateKey(privateKey))
+	publicKeyStr := base64x.StdEncode(x509.MarshalPKCS1PublicKey(&privateKey.PublicKey))
 	return privateKeyStr, publicKeyStr, nil
 }

@@ -5,8 +5,9 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
-	"encoding/base64"
 	"encoding/hex"
+
+	"github.com/go-leo/cryptox/base64x"
 )
 
 func EncryptToHex(plainText []byte, hexPubKey string) (string, error) {
@@ -34,7 +35,7 @@ func DecryptByHex(hexCipherText, hexPriKey string) ([]byte, error) {
 }
 
 func EncryptToBase64(plainText []byte, base64PubKey string) (string, error) {
-	pub, err := base64.StdEncoding.DecodeString(base64PubKey)
+	pub, err := base64x.StdDecode(base64PubKey)
 	if err != nil {
 		return "", err
 	}
@@ -42,15 +43,15 @@ func EncryptToBase64(plainText []byte, base64PubKey string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return base64.StdEncoding.EncodeToString(cipherBytes), nil
+	return base64x.StdEncode(cipherBytes), nil
 }
 
 func DecryptByBase64(base64CipherText, base64PriKey string) ([]byte, error) {
-	privateBytes, err := base64.StdEncoding.DecodeString(base64PriKey)
+	privateBytes, err := base64x.StdDecode(base64PriKey)
 	if err != nil {
 		return nil, err
 	}
-	cipherTextBytes, err := base64.StdEncoding.DecodeString(base64CipherText)
+	cipherTextBytes, err := base64x.StdDecode(base64CipherText)
 	if err != nil {
 		return nil, err
 	}
